@@ -57,6 +57,6 @@ module.exports = class rozvrh extends commando.Command {
             if(cell.length > 1 && Array.isArray(schedule[cellI + 1]) && schedule[cellI + 1].length > 1) embed.addField("\u200B", "\u200B", true);
         }
 
-        return msg.reply(embed);
+        return msg.say(embed);
     }
 };

@@ -20,6 +20,16 @@ client.on("ready", () => {
     console.log("Ready");
 });
 
+const serializeArgs = (args) => {
+    if(typeof args === "string") return args;
+    if(Array.isArray(args)) return args.join("&");
+    return Object.entries(args).map(t => `${t[0]}=${encodeURIComponent(t[1].toString())}`).join("&");
+}
+
+client.on("commandRun", (c, p, msg, args) => {
+    console.log(`[RUN]: ${msg.author.tag}@${msg.guild?.name || "DM"}#${msg.channel?.name || "default"}/${c.groupID}/${c.name}?${serializeArgs(args)} | ${msg.content}`);
+});
+
 client.registry
     .registerGroups([
         ["ssps", "Příkazy pro SSPŠ"],
