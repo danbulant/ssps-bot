@@ -95,6 +95,42 @@ class Schedule {
     }
 }
 
+/**
+ * @typedef WPPost
+ * @property {number} id
+ * @property {string} date ISO date
+ * @property {string} date_gmt
+ * @property {{ rendered: string }} guild
+ * @property {string} modified ISO date
+ * @property {string} modified_gmt
+ * @property {string} slug Used in pretty URLs
+ * @property {string} status Always publish in public API
+ * @property {"post"} type
+ * @property {string} link
+ * @property {{ rendered: string }} title
+ * @property {{ rendered: string, protected: boolean }} content
+ * @property {{ rendered: string, protected: boolean }} excerpt
+ * @property {number} author
+ * @property {number} featured_media
+ * @property {"closed" | "open"} comment_status Seems to be always closed
+ * @property {"closed" | "open"} ping_status Seems to be always on
+ * @property {boolean} sticky
+ * @property {string} template
+ * @property {string} format commonly 'standard'
+ * @property {[]} meta ?
+ * @property {number[]} categories
+ * @property {WPPostLinks} _links
+ */
+/**
+ * @typedef WPPostLinks
+ * @property {{ href: string }[]} self
+ * @property {{ href: string }[]} collection
+ * @property {{ href: string }[]} about
+ * @property {{ href: string, embeddable: boolean }[]} author
+ * @property {{ href: string, embeddable: boolean }[]} replies
+ * @property {{ href: string, count: number }[]} version-history
+ */
+
 class API {
     request = request;
 
@@ -108,6 +144,13 @@ class API {
         const res = await request(`wp-content/themes/ssps-wordpress-theme/schedule.php/?class=${className}`);
 
         return new Schedule(res);
+    }
+
+    async getNews() {
+        /** @type {WPPost[]} */
+        const res = await request(`wp-json/wp/v2/posts`);
+
+        return res;
     }
 
     formatRoom(room) {

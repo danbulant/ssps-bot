@@ -35,7 +35,7 @@ client.registry
         ["ssps", "Příkazy pro SSPŠ"],
         ["nastaveni", "Nastavení bota"]
     ])
-    .registerDefaults()
+    .registerDefaultTypes()
     .registerCommandsIn(path.join(__dirname, 'commands'));
 
 client.setProvider(
