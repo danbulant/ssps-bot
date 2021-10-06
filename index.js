@@ -4,12 +4,21 @@ const sqlite3 = require("sqlite3");
 const yaml = require("js-yaml");
 const fs = require("fs-extra");
 const path = require("path");
+const luxon = require("luxon");
+
+luxon.Settings.defaultLocale = "cs";
 
 const config = yaml.load(fs.readFileSync("./config.yml", { encoding: "utf-8" }));
 
 const client = new Commando.Client({
     owner: '820696421912412191',
-    commandPrefix: "ssps!"
+    commandPrefix: "ssps!",
+    presence: {
+        activity: {
+            type: "WATCHING",
+            name: "Prestiž"
+        }
+    }
 });
 
 client.on("commandError", (c, e) => {

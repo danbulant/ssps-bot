@@ -1,13 +1,7 @@
 const commando = require("@iceprod/discord.js-commando");
 const { MessageEmbed } = require("discord.js");
+const { DateTime } = require("luxon");
 const api = require("../../utils/api");
-
-/** 
- * @typedef {T extends PromiseLike<infer U> ? U : T} Depromise
- * @template T
- */
-/** @type {Record<string, Depromise<ReturnType<api["getSchedule"]>>>} */
-var cache = {};
 
 module.exports = class rozvrh extends commando.Command {
     constructor(client) {
@@ -31,17 +25,16 @@ module.exports = class rozvrh extends commando.Command {
         className = className.replace(".", "").toUpperCase();
         className = api.map[className];
         if(!className) return msg.reply("Třída není podporovaná.");
-        if(!cache[className]) {
-            cache[className] = await api.getSchedule(className);
-        }
+        const sc = await api.getSchedule(className);
 
-        const date = new Date;
-        const dayOfWeek = (date.getDay() > 1 && date.getDay() < 6 ? date.getDay() : 1) - 1;
-        const schedule = cache[className].schedule[dayOfWeek];
+        const date = DateTime.now();
+        if(date.hour > 16) date.plus({ days: 1 }); // show tomorrow supplementations after 4PM
+        const dayOfWeek = (date.weekday > 1 && date.weekday < 6 ? date.weekday : 1) - 1;
+        const schedule = sc.schedule[dayOfWeek];
 
         const embed = new MessageEmbed();
         embed.setTitle("Rozvrh");
-        embed.setDescription("Rozvrh pro třídu " + api.demap[className]);
+        embed.setDescription(`Rozvrh pro třídu ${api.demap[className]} pro ${date.toFormat("cccc")}`);
 
         for(let cellI in schedule) {
             cellI = parseInt(cellI);

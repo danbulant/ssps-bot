@@ -1,3 +1,4 @@
+const { DateTime } = require("luxon");
 const fetch = require("node-fetch");
 
 async function request(endpoint, body) {
@@ -134,8 +135,8 @@ class Schedule {
 class API {
     request = request;
 
-    async getSupplementations(date = new Date) {
-        const res = await request(`wp-content/themes/ssps-wordpress-theme/supplementation.php/?date=${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, "0")}${date.getDate().toString().padStart(2, "0")}`);
+    async getSupplementations(date = new DateTime) {
+        const res = await request(`wp-content/themes/ssps-wordpress-theme/supplementation.php/?date=${date.toFormat("yyyyMMdd")}`);
 
         return new Supplementations(res);
     }

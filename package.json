@@ -4,6 +4,7 @@
 		"discord.js": "12",
 		"fs-extra": "^10.0.0",
 		"js-yaml": "^4.1.0",
+		"luxon": "^2.0.2",
 		"node-fetch": "2",
 		"sqlite": "^4.0.23",
 		"sqlite3": "^5.0.2",
