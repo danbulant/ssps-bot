@@ -1,4 +1,5 @@
 const commando = require("@iceprod/discord.js-commando");
+const api = require("../../utils/api");
 
 module.exports = class suplovani extends commando.Command {
     constructor(client) {
@@ -12,6 +13,7 @@ module.exports = class suplovani extends commando.Command {
     }
 
     run(msg) {
-        return msg.reply("TBD");
+        const suplementations = await api.getSupplementations();
+        
     }
 };

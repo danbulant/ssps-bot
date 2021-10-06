@@ -43,13 +43,12 @@ async function request(endpoint, body) {
 
 class Supplementations {
     constructor(data) {
+        /** @type {{ AbsentClasses: AbsentClass[], ChangesForClasses: ChangedClass[]}} */
         this.data = data;
     }
 
     getByClassName(name) {
-        /** @type {AbsentClass[]} */
         const absent = this.data.AbsentClasses.filter(t => t.Entity.Abbrev === name);
-        /** @type {ChangedClass[]} */
         const changed = this.data.ChangesForClasses.filter(t => t.Class.Abbrev === name);
         return { absent, changed };
     }
@@ -77,7 +76,7 @@ class Supplementations {
  */
 
 class Schedule {
-    /** @type {CellAtom[][]} */
+    /** @type {(CellAtom | CellAtom[])[][]} */
     schedule = [];
     constructor(data) {
         this.data = data;
@@ -109,6 +108,56 @@ class API {
         const res = await request(`wp-content/themes/ssps-wordpress-theme/schedule.php/?class=${className}`);
 
         return new Schedule(res);
+    }
+
+    formatRoom(room) {
+        if(!room) return "";
+        return room.toString().padStart(3, "0");
+    }
+
+    map = {
+        "1A": "1U",
+        "1B": "1V",
+        "1C": "1W",
+        "1G": "1X",
+        "1K": "1Y",
+        "2A": "1P",
+        "2B": "1Q",
+        "2C": "1R",
+        "2L": "1S",
+        "2K": "1T",
+        "3A": "1K",
+        "3B": "1L",
+        "3C": "1M",
+        "3L": "1N",
+        "3K": "1O",
+        "4A": "1E",
+        "4B": "1F",
+        "4C": "1G",
+        "4L": "1I",
+        "4K": "1J"
+    }
+    demap = {
+        "1U": "1A",
+        "1V": "1B",
+        "1W": "1C",
+        "1X": "1G",
+        "1Y": "1K",
+        "1P": "2A",
+        "1Q": "2B",
+        "1R": "2C",
+        "1S": "2L",
+        "1T": "2K",
+        "1K": "3A",
+        "1L": "3B",
+        "1M": "3C",
+        "1N": "3L",
+        "1O": "3K",
+        "1E": "4A",
+        "1F": "4B",
+        "1G": "4C",
+        "1I": "4L",
+        "1J": "4K",
     }
 }
 

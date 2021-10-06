@@ -9,10 +9,6 @@ const api = require("../../utils/api");
 /** @type {Record<string, Depromise<ReturnType<api["getSchedule"]>>>} */
 var cache = {};
 
-var map = {
-    "1K": "1Y"
-}
-
 module.exports = class rozvrh extends commando.Command {
     constructor(client) {
         super(client, {
@@ -33,7 +29,7 @@ module.exports = class rozvrh extends commando.Command {
 
     async run(msg, { className }) {
         className = className.replace(".", "").toUpperCase();
-        className = map[className];
+        className = api.map[className];
         if(!className) return msg.reply("Třída není podporovaná.");
         if(!cache[className]) {
             cache[className] = await api.getSchedule(className);
@@ -45,18 +41,20 @@ module.exports = class rozvrh extends commando.Command {
 
         const embed = new MessageEmbed();
         embed.setTitle("Rozvrh");
+        embed.setDescription("Rozvrh pro třídu " + api.demap[className]);
 
-        for(const cellI in schedule) {
-            const cell = schedule[cellI];
+        for(let cellI in schedule) {
+            cellI = parseInt(cellI);
+            let cell = schedule[cellI];
             if(!cell) {
                 console.log("Wut?", cellI, cell);
                 continue;
             }
-            try {
-                embed.addField(cell.Subject.Abbrev, `${cell.Room.Abbrev} - ${cell.Teacher.Name}`);
-            } catch(e) {
-                console.warn(e, cellI, cell);
+            if(!Array.isArray(cell)) cell = [cell];
+            for(const scell of cell) {       
+                embed.addField(scell.Subject.Abbrev, `\`${api.formatRoom(scell.Room.Abbrev) || "?"}\` - ${scell.Teacher.Name} - **${scell.Group.Name}**`, cell.length > 1);
             }
+            if(cell.length > 1 && Array.isArray(schedule[cellI + 1]) && schedule[cellI + 1].length > 1) embed.addField("\u200B", "\u200B", true);
         }
 
         return msg.reply(embed);
