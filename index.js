@@ -7,6 +7,7 @@ const path = require("path");
 const luxon = require("luxon");
 
 luxon.Settings.defaultLocale = "cs";
+luxon.Settings.defaultZone = new luxon.IANAZone("Europe/Prague");
 
 const config = yaml.load(fs.readFileSync("./config.yml", { encoding: "utf-8" }));
 
