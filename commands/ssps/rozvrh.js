@@ -2,8 +2,12 @@ const commando = require("@iceprod/discord.js-commando");
 const { MessageEmbed } = require("discord.js");
 const { DateTime } = require("luxon");
 const api = require("../../utils/api");
+const ssps = require("../../utils/ssps-server");
 
 module.exports = class rozvrh extends commando.Command {
+    /**
+     * @arg {import("@iceprod/discord.js-commando").CommandoClient} client
+     * */
     constructor(client) {
         super(client, {
             name: "rozvrh",
@@ -12,10 +16,27 @@ module.exports = class rozvrh extends commando.Command {
             description: "Zobrazí rozvrh hodin pro danou třídu",
             args: [{
                 key: "className",
-                type: "string",
                 prompt: "Jakou třídu chcete zvolit?",
-                validate(val) {
-                    return /^[1-4]\.?[ABCKGL]$/i.test(val);
+                isEmpty(val, msg) {
+                    if(val) return false;
+                    if(!client.guilds.resolve(ssps.server)) return true;
+                    console.log("Finding roles");
+                    return !Object.entries(ssps.roles).find(([id, name]) =>
+                        client.guilds.resolve(ssps.server).roles.valueOf().has(id)
+                    );
+                },
+                validate(val, msg) {
+                    if(/^[1-4]\.?[ABCKGL]$/i.test(val)) return true;
+                    if(!client.guilds.resolve(ssps.server)) return false;
+                    return Object.entries(ssps.roles).find(([id, name]) =>
+                        client.guilds.resolve(ssps.server).roles.valueOf().has(id)
+                    );
+                },
+                parse(val, msg) {
+                    if(val) return val;
+                    return Object.entries(ssps.roles).find(([id, name]) =>
+                        client.guilds.resolve(ssps.server).roles.valueOf().has(id)
+                    )[1];
                 }
             }]
         });
@@ -27,10 +48,12 @@ module.exports = class rozvrh extends commando.Command {
         if(!className) return msg.reply("Třída není podporovaná.");
         const sc = await api.getSchedule(className);
 
-        const date = DateTime.now();
-        if(date.hour > 16) date.plus({ days: 1 }); // show tomorrow supplementations after 4PM
-        const dayOfWeek = (date.weekday > 1 && date.weekday < 6 ? date.weekday : 1) - 1;
-        const schedule = sc.schedule[dayOfWeek];
+        let date = DateTime.now();
+        if(date.hour > 16) date = date.plus({ days: 1 }); // show tomorrow supplementations after 4PM
+        if(date.weekday === 0 || date.weekday === 7) {
+            date = date.plus({ days: date.weekday === 0 ? 2 : 1 });
+        }
+        const schedule = sc.schedule[date.weekday - 1];
 
         const embed = new MessageEmbed();
         embed.setTitle("Rozvrh");
