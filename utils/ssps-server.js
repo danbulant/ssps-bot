@@ -28,9 +28,9 @@ const roles = {
  */
 function getClass(user) {
     if(!user.client.guilds.resolve(server)) return null;
-    if(!user.client.guilds.resolve(server).member(msg.author)) return null;
+    if(!user.client.guilds.resolve(server).member(user)) return null;
     return Object.entries(roles).find(([id, name]) =>
-        user.client.guilds.resolve(server).member(msg.author).roles.valueOf().has(id)
+        user.client.guilds.resolve(server).member(user).roles.valueOf().has(id)
     );
 }
 
