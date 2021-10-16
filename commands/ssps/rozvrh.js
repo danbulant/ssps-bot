@@ -19,24 +19,15 @@ module.exports = class rozvrh extends commando.Command {
                 prompt: "Jakou třídu chcete zvolit?",
                 isEmpty(val, msg) {
                     if(val) return false;
-                    if(!client.guilds.resolve(ssps.server)) return true;
-                    console.log("Finding roles");
-                    return !Object.entries(ssps.roles).find(([id, name]) =>
-                        client.guilds.resolve(ssps.server).roles.valueOf().has(id)
-                    );
+                    return !ssps.getClass(msg.author);
                 },
                 validate(val, msg) {
                     if(/^[1-4]\.?[ABCKGL]$/i.test(val)) return true;
-                    if(!client.guilds.resolve(ssps.server)) return false;
-                    return Object.entries(ssps.roles).find(([id, name]) =>
-                        client.guilds.resolve(ssps.server).roles.valueOf().has(id)
-                    );
+                    return !!ssps.getClass(msg.author);
                 },
                 parse(val, msg) {
                     if(val) return val;
-                    return Object.entries(ssps.roles).find(([id, name]) =>
-                        client.guilds.resolve(ssps.server).roles.valueOf().has(id)
-                    )[1];
+                    return ssps.getClass(msg.author);
                 }
             }]
         });

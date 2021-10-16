@@ -22,7 +22,22 @@ const roles = {
     "887339044961406996": "4L"
 };
 
+/**
+ * 
+ * @param {import("discord.js").User} user 
+ */
+function getClass(user) {
+    if(!user.client.guilds.resolve(server)) return null;
+    if(!user.client.guilds.resolve(server).member(msg.author)) return null;
+    return Object.entries(roles).find(([id, name]) =>
+        user.client.guilds.resolve(server).member(msg.author).roles.valueOf().has(id)
+    );
+}
+
+const server = "882560404167995443";
+
 module.exports = {
     roles,
-    server: "882560404167995443"
+    server,
+    getClass
 }
