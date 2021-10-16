@@ -58,7 +58,7 @@ module.exports = class rozvrh extends commando.Command {
                 continue;
             }
             if(!Array.isArray(cell)) cell = [cell];
-            for(const scell of cell) {       
+            for(const scell of cell) {
                 embed.addField(scell.Subject.Abbrev, `\`${api.formatRoom(scell.Room.Abbrev) || "?"}\` - ${scell.Teacher.Name} - **${scell.Group.Name}**`, cell.length > 1);
             }
             if(cell.length > 1 && Array.isArray(schedule[cellI + 1]) && schedule[cellI + 1].length > 1) embed.addField("\u200B", "\u200B", true);
