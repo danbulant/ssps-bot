@@ -159,6 +159,12 @@ class API {
         return room.toString().padStart(3, "0");
     }
 
+    groups = [
+        ["celá třída"],
+        ["Skupina 1", "Skupina 2"],
+        ["Cizý jazyk 1", "Cizý jazyk 2"]
+    ]
+
     map = {
         "1A": "1U",
         "1B": "1V",
