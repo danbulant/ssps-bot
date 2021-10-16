@@ -30,8 +30,8 @@ function getClass(user) {
     if(!user.client.guilds.resolve(server)) return null;
     if(!user.client.guilds.resolve(server).member(user)) return null;
     return Object.entries(roles).find(([id, name]) =>
-        user.client.guilds.resolve(server).member(user).roles.valueOf().has(id)
-    );
+        user.client.guilds.resolve(server).member(user).roles.cache.has(id)
+    )?.[1];
 }
 
 const server = "882560404167995443";
