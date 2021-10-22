@@ -162,7 +162,7 @@ class API {
     groups = [
         ["celá třída"],
         ["Skupina 1", "Skupina 2"],
-        ["Cizý jazyk 1", "Cizý jazyk 2"]
+        ["Cizí jazyk 1", "Cizí jazyk 2"]
     ]
 
     map = {
