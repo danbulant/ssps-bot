@@ -2,6 +2,10 @@ const commando = require("@iceprod/discord.js-commando");
 const { MessageEmbed } = require("discord.js");
 const { DateTime } = require("luxon");
 const api = require("../../utils/api");
+const Group = require("../../utils/models/group");
+const Subject = require("../../utils/models/subject");
+const Teacher = require("../../utils/models/teacher");
+const Timetable = require("../../utils/models/timetable");
 const ssps = require("../../utils/ssps-server");
 
 module.exports = class rozvrh extends commando.Command {
@@ -37,31 +41,38 @@ module.exports = class rozvrh extends commando.Command {
         className = className.replace(".", "").toUpperCase();
         className = api.map[className];
         if(!className) return msg.reply("Třída není podporovaná.");
-        const sc = await api.getSchedule(className);
 
         let date = DateTime.now();
         if(date.hour > 16) date = date.plus({ days: 1 }); // show tomorrow supplementations after 4PM
         if(date.weekday === 0 || date.weekday === 7) {
             date = date.plus({ days: date.weekday === 0 ? 2 : 1 });
         }
-        const schedule = sc.schedule[date.weekday - 1];
+        const schedule = await Timetable.findAll({
+            where: {
+                day: date.weekday - 1,
+                classId: className
+            },
+            order: [["hour", "ASC"]],
+            include: [Group, Subject, Teacher]
+        })
 
         const embed = new MessageEmbed();
         embed.setTitle("Rozvrh");
         embed.setDescription(`Rozvrh pro třídu ${api.demap[className]} pro ${date.toFormat("cccc")}`);
 
-        for(let cellI in schedule) {
-            cellI = parseInt(cellI);
-            let cell = schedule[cellI];
-            if(!cell) {
-                console.log("Wut?", cellI, cell);
-                continue;
+        var array = [];
+        for(let cell of schedule) {
+            if(!array[cell.hour]) array[cell.hour] = [];
+            array[cell.hour].push(cell);
+        }
+        for(let cellI in array) {
+            let cells = array[cellI];
+            if(!cells) continue;
+
+            for(const scell of cells) {
+                embed.addField(scell.subject.abbrev, `\`${api.formatRoom(scell.roomId) || "?"}\` - ${scell.teacher.name} - **${scell.group.name}**`, cells.length > 1);
             }
-            if(!Array.isArray(cell)) cell = [cell];
-            for(const scell of cell) {
-                embed.addField(scell.Subject.Abbrev, `\`${api.formatRoom(scell.Room.Abbrev) || "?"}\` - ${scell.Teacher.Name} - **${scell.Group.Name}**`, cell.length > 1);
-            }
-            if(cell.length > 1 && Array.isArray(schedule[cellI + 1]) && schedule[cellI + 1].length > 1) embed.addField("\u200B", "\u200B", true);
+            if(cells.length > 1 && schedule[cellI + 1].length > 1) embed.addField("\u200B", "\u200B", true);
         }
 
         return msg.say(embed);
