@@ -2,7 +2,7 @@ const { Sequelize, Op, Model, DataTypes } = require("sequelize");
 const sequelize = require("../sequelize");
 
 const Subject = sequelize.define(
-    "subjects",
+    "subject",
     {
         id: {
             type: DataTypes.CHAR(3),

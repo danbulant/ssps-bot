@@ -2,10 +2,10 @@ const { Sequelize, Op, Model, DataTypes } = require("sequelize");
 const sequelize = require("../sequelize");
 
 const Room = sequelize.define(
-    "rooms",
+    "room",
     {
         id: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.STRING(8),
             primaryKey: true
         }
     }

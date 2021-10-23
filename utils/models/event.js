@@ -2,7 +2,7 @@ const { Sequelize, Op, Model, DataTypes } = require("sequelize");
 const sequelize = require("../sequelize");
 
 const Event = sequelize.define(
-    "events",
+    "event",
     {
         id: {
             type: DataTypes.INTEGER,
@@ -11,7 +11,7 @@ const Event = sequelize.define(
         },
         date: {
             type: DataTypes.DATE,
-            defaultValue: "CURRENT_TIMESTAMP()",
+            defaultValue: Sequelize.fn("CURRENT_TIMESTAMP"),
             allowNull: false
         },
         type: {

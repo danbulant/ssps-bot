@@ -2,7 +2,7 @@ const { Sequelize, Op, Model, DataTypes } = require("sequelize");
 const sequelize = require("../sequelize");
 
 const Teacher = sequelize.define(
-    "teachers",
+    "teacher",
     {
         id: {
             type: DataTypes.STRING(16),

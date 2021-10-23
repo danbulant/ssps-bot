@@ -4,7 +4,7 @@ const Event = require("./event");
 const Student = require("./student");
 
 const EventStudent = sequelize.define(
-    "event_students",
+    "event_student",
     {
         event: {
             type: DataTypes.INTEGER,
@@ -21,6 +21,9 @@ const EventStudent = sequelize.define(
                 model: Student,
                 key: "id"
             }
+        },
+        relation: {
+            type: DataTypes.STRING
         }
     },
     {
@@ -30,7 +33,5 @@ const EventStudent = sequelize.define(
         }]
     }
 );
-EventStudent.belongsTo(Event, { as: "event" });
-EventStudent.belongsTo(Student, { as: "student" });
 
 module.exports = EventStudent;

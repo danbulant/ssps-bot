@@ -1,9 +1,8 @@
 const { Sequelize, Op, Model, DataTypes } = require("sequelize");
 const sequelize = require("../sequelize");
-const Class = require("./class");
 
 const Group = sequelize.define(
-    "groups",
+    "group",
     {
         id: {
             type: DataTypes.STRING(16),
@@ -15,15 +14,10 @@ const Group = sequelize.define(
         name: {
             type: DataTypes.STRING
         },
-        class: {
-            type: DataTypes.CHAR(2),
-            references: {
-                model: Class,
-                key: "id"
-            }
+        discord: {
+            type: DataTypes.STRING
         }
     }
 );
-Group.belongsTo(Class, { as: "class" });
 
 module.exports = Group;

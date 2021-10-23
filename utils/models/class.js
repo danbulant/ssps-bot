@@ -2,7 +2,7 @@ const { Sequelize, Op, Model, DataTypes } = require("sequelize");
 const sequelize = require("../sequelize");
 
 const Class = sequelize.define(
-    "classes",
+    "class",
     {
         id: {
             type: DataTypes.CHAR(2),
@@ -22,7 +22,7 @@ const Class = sequelize.define(
             type: DataTypes.STRING
         },
         displayName: {
-            type: "CHAR(2) GENERATED ALWAYS AS concat(`year` - year(curdate()) + 1,`type`) STORED",
+            type: "CHAR(2) GENERATED ALWAYS AS (concat(year(curdate()) - `year` + 1, `type`))",
             set() {
                 throw new Error('displayName is read-only')
             }

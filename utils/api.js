@@ -2,7 +2,7 @@ const { DateTime } = require("luxon");
 const fetch = require("node-fetch");
 
 async function request(endpoint, body) {
-    const res = await fetch("https://www.ssps.cz/" + endpoint, {
+    const res = await fetch(endpoint.startsWith("https://") ? endpoint : "https://www.ssps.cz/" + endpoint, {
         method: body ? "POST" : "GET",
         body,
         headers: {
@@ -132,8 +132,61 @@ class Schedule {
  * @property {{ href: string, count: number }[]} version-history
  */
 
+/**
+ * @typedef ProfesniUzivatel
+ * @property {string|null} about
+ * @property {string|null} birthday
+ * @property {boolean} blocked
+ * @property {string|null} class
+ * @property {number} documentId
+ * @property {string} email
+ * @property {string} firstName
+ * @property {string} lastName
+ * @property {number} id
+ * @property {string} imagePath
+ * @property {number} similarity
+ */
+
+class ProfesniSitAPI {
+    async *getUsers() {
+        var errors = 0;
+        var id = 1;
+        while(errors < 15) {
+            /** @type {ProfesniUzivatel|null} */
+            const res = await request(`https://profesnisit.ssps.cz/user/get-user?id=${id}`);
+            id++;
+            console.log("Trying", id);
+            if(!res || Object.values(res).every(t => t === null)) {
+                errors++;
+                continue;
+            }
+            errors = 0;
+            yield res;
+        }
+    }
+}
+
+const letterMap = {
+    "ě": "e",
+    "š": "s",
+    "č": "c",
+    "ř": "r",
+    "ž": "z",
+    "ý": "y",
+    "á": "a",
+    "í": "i",
+    "é": "e",
+    "ó": "o",
+    "ú": "u",
+    "ů": "u"
+};
+function removeCestina(str) {
+    return str.split("").map(t => letterMap[t] || t).join("");
+}
+
 class API {
     request = request;
+    profesniSit = new ProfesniSitAPI;
 
     async getSupplementations(date = new DateTime) {
         const res = await request(`wp-content/themes/ssps-wordpress-theme/supplementation.php/?date=${date.toFormat("yyyyMMdd")}`);
@@ -160,6 +213,21 @@ class API {
     formatRoom(room) {
         if(!room) return "";
         return room.toString().padStart(3, "0");
+    }
+
+    isTeacherMail(mail) {
+        return /[a-z.]+@ssps\.cz/.test(mail);
+    }
+    isStudentMail(mail) {
+        return /[a-z]+\.[a-z]{2}\.20[12][0-9]@ssps\.cz/.test(mail);
+    }
+
+    buildTeacherMail(name) {
+        return `${removeCestina(name).replace(/ /g, ".")}@ssps.cz`.toLowerCase();
+    }
+    buildStudentMail(name, year) {
+        if(!Array.isArray(name)) name = name.split(" ");
+        return `${removeCestina(name[1])}.${removeCestina(name[0]).substr(0,2)}.${year}@ssps.cz`.toLowerCase();
     }
 
     groups = [

@@ -4,7 +4,7 @@ const Event = require("./event");
 const Group = require("./group");
 
 const EventGroup = sequelize.define(
-    "event_groups",
+    "event_group",
     {
         event: {
             type: DataTypes.INTEGER,
@@ -21,6 +21,9 @@ const EventGroup = sequelize.define(
                 model: Group,
                 key: "id"
             }
+        },
+        relation: {
+            type: DataTypes.STRING
         }
     },
     {
@@ -30,7 +33,5 @@ const EventGroup = sequelize.define(
         }]
     }
 );
-EventGroup.belongsTo(Event, { as: "event" });
-EventGroup.belongsTo(Group, { as: "group" });
 
 module.exports = EventGroup;

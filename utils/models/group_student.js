@@ -4,7 +4,7 @@ const Group = require("./group");
 const Student = require("./student");
 
 const GroupStudent = sequelize.define(
-    "group_students",
+    "group_student",
     {
         group: {
             type: DataTypes.STRING(16),
@@ -30,7 +30,5 @@ const GroupStudent = sequelize.define(
         }]
     }
 );
-EventStudent.belongsTo(Student, { as: "student" });
-EventStudent.belongsTo(Group, { as: "group" });
 
 module.exports = GroupStudent;
