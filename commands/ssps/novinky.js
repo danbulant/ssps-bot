@@ -32,6 +32,6 @@ module.exports = class novinky extends commando.Command {
             );
         }
 
-        return msg.reply(embed);
+        return msg.say(embed);
     }
 };
