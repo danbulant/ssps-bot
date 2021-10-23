@@ -141,6 +141,9 @@ class API {
         return new Supplementations(res);
     }
 
+    /** 
+     * @returns {Promise<Schedule>}
+     */
     async getSchedule(className) {
         const res = await request(`wp-content/themes/ssps-wordpress-theme/schedule.php/?class=${className}`);
 

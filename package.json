@@ -5,7 +5,9 @@
 		"fs-extra": "^10.0.0",
 		"js-yaml": "^4.1.0",
 		"luxon": "^2.0.2",
+		"mariadb": "^2.5.5",
 		"node-fetch": "2",
+		"sequelize": "^6.7.0",
 		"sqlite": "^4.0.23",
 		"sqlite3": "^5.0.2",
 		"turndown": "^7.1.1"

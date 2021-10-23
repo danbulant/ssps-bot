@@ -10,6 +10,9 @@ luxon.Settings.defaultLocale = "cs";
 luxon.Settings.defaultZone = new luxon.IANAZone("Europe/Prague");
 
 const config = yaml.load(fs.readFileSync("./config.yml", { encoding: "utf-8" }));
+global.config = config;
+
+require("./utils/sequelize");
 
 const client = new Commando.Client({
     owner: '820696421912412191',
@@ -17,7 +20,7 @@ const client = new Commando.Client({
     presence: {
         activity: {
             type: "WATCHING",
-            name: "Prestiž"
+            name: "prestiž"
         }
     }
 });

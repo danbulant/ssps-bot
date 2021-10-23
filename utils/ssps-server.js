@@ -21,6 +21,7 @@ const roles = {
     "887339039533957151": "4C",
     "887339044961406996": "4L"
 };
+const reverseRoles = Object.fromEntries(Object.entries(roles).map(([t1,t2]) => [t2,t1]));
 
 /**
  * 
@@ -38,6 +39,7 @@ const server = "882560404167995443";
 
 module.exports = {
     roles,
+    reverseRoles,
     server,
     getClass
 }
