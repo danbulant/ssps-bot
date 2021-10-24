@@ -5,17 +5,10 @@ const ssps = require("../ssps-server");
 const Group = require("./group");
 
 class Student extends Model {
-    /** @type {string} */
-    id;
-    /** @type {string} */
-    name;
-    /** @type {string} */
-    classId;
-
     async setClassID(classId, force) {
         if(this.classId === classId && !force) return;
         this.classId = classId;
-        await this.save({ fields: "classId"});
+        await this.save({ fields: ["classId"] });
         const [groups, mainGroup] = await Promise.all([
             this.getGroups(),
             Group.findOne({
