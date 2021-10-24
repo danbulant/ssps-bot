@@ -61,6 +61,7 @@ module.exports = class cmd extends commando.Command {
                     connect <email> [--discord <id>] - Connects discord and user profile
                     teacher-connect <discord id> <email> - Connects discord and teacher profile
                     set-teacher-room <room> [email] [--force|-f] - Sets teacher's homeroom
+                    groups [--user <discord id>] [--add <group>|--remove <group>] - Manages groups
                 `);
             case "connect":
                 return this.connectCmd(argv, send, msg);
@@ -68,9 +69,38 @@ module.exports = class cmd extends commando.Command {
                 return this.teacherConnectCmd(argv, send, msg);
             case "set-teacher-room":
                 return this.setTeacherRoomCmd(argv, send, msg);
+            case "groups":
+                return this.groupsCmd(argv, send, msg);
             default:
                 return send(`Command ${argv._[0]} not found`);
         }
+    }
+
+    async groupsCmd(argv, send, msg) {
+        if(argv.help) return send(`
+        Shows or update groups the user is part of.
+        User defaults to current user, but can be set by --user <discord id>
+
+        --add <group> - Adds group (group must belong to current user's class). Use abbreviation
+        --remove <group> - Removes group (can't be the special 'whole class' group). Use abbreviation. Can be list of comma separated values.
+        --user <discord id> - Selects another user (owner only)
+
+        Format: groups [--user <discord id>] [--add <group>|--remove <group>]
+        `);
+        if(argv.add || argv.remove) return send("Not yet implemented");
+        const person = await Person.findOne({
+            where: { discord: argv.user || msg.author.id }
+        });
+        if(!person) return send("Student nenalezen");
+        const student = await Student.findOne({
+            where: { personId: person.id }
+        });
+        const groups = await student.getGroups();
+        return send(`
+        Student je součástí těchto skupin:
+
+        ${groups.map(t => `- ${t.abbrev} (${t.name})`).join("\n")}
+        `);
     }
 
     async setTeacherRoomCmd(argv, send, msg) {
@@ -171,7 +201,7 @@ module.exports = class cmd extends commando.Command {
         if(!student) return send("Student nenalezen. Momentálně je vyžadováno aby byl student registrovaný na profesní síti.");
         const userClass = ssps.getClass(msg.author);
         const classID = api.map[userClass];
-        if(student.classId !== classID) return send(`Třída neodpovídá roli na SSPŠ serveru`);
+        if(student.classId && student.classId !== classID) return send(`Třída neodpovídá roli na SSPŠ serveru`);
         if(!student.personId) return send("Není vytvoření uživatelský profil - BUG");
         const person = await Person.findOne({
             where: {
@@ -181,6 +211,8 @@ module.exports = class cmd extends commando.Command {
         if(person.mail !== email) return send("Student nenalezen.");
         person.discord = discord;
         await person.save();
+        if(student.classId) await student.setClassID(student.classId, true);
+        await student.syncClass();
         return send("Propojeno");
     }
 };
