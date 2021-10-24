@@ -5,6 +5,7 @@ const ssps = require("../../utils/ssps-server");
 const Student = require("../../utils/models/student");
 const Person = require("../../utils/models/person");
 const Teacher = require("../../utils/models/teacher");
+const Room = require("../../utils/models/room");
 
 module.exports = class cmd extends commando.Command {
     constructor(client) {
@@ -21,7 +22,8 @@ module.exports = class cmd extends commando.Command {
     async run(msg, args) {
         const argv = minimist(args, {
             alias: {
-                help: "h"
+                help: "h",
+                force: "f"
             },
             string: "_"
         });
@@ -57,18 +59,56 @@ module.exports = class cmd extends commando.Command {
                 Available commands:
                     help - Shows this page
                     connect <email> [--discord <id>] - Connects discord and user profile
-                    teacher-connect <discord id> <email>- Connects discord and teacher profile
-                    set-teacher-room <room> [email] - Sets teacher's homeroom
+                    teacher-connect <discord id> <email> - Connects discord and teacher profile
+                    set-teacher-room <room> [email] [--force|-f] - Sets teacher's homeroom
                 `);
             case "connect":
                 return this.connectCmd(argv, send, msg);
             case "teacher-connect":
                 return this.teacherConnectCmd(argv, send, msg);
             case "set-teacher-room":
-                return send("Not yet implemented");
+                return this.setTeacherRoomCmd(argv, send, msg);
             default:
                 return send(`Command ${argv._[0]} not found`);
         }
+    }
+
+    async setTeacherRoomCmd(argv, send, msg) {
+        if(argv.help) return send(`
+        Updates teacher room.
+
+        --force -f - Forces update of room, even if the room doesn't exist (creates it in database)
+        email - Select which user to set the room of. Owner only.
+
+        Format: set-teacher-room <room> [email] [--force|-f]
+        `);
+        if((argv._[1] || argv.force) && !this.client.isOwner(msg.author)) return send("You are not in the sudoers file, this incident will be reported.");
+        var mail = argv._[1];
+        var room = argv._[0];
+        if(mail && !api.isTeacherMail(mail)) return send("Email má špatný formát");
+        var person;
+        if(!mail) {
+            person = await Person.findOne({
+                where: { discord: msg.author.id }
+            });
+        } else {
+            person = await Person.findOne({
+                where: { mail }
+            });
+        }
+        if(!person) return send("Není připojený školní účet");
+        if(person.type !== "teacher") return send("Nejste učitelem");
+        var r = await Room.findOne({
+            where: { id: room }
+        });
+        if(!r && !argv.force) return send("Učebna neexistuje");
+        if(!r) r = await Room.create({ id: room }); 
+        var teacher = await Teacher.findOne({
+            where: { personId: person.id }
+        });
+        teacher.room = room;
+        await teacher.save();
+        return send("Hotovo");
     }
 
     async teacherConnectCmd(argv, send, msg) {
