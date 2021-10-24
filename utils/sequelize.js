@@ -51,4 +51,9 @@ Timetable.belongsTo(Room);
 Person.hasOne(Student);
 Person.hasOne(Teacher);
 
-sequelize.sync({ force: global.config.mysql.forceUpdate });
+Teacher.belongsTo(Room);
+
+sequelize.sync({
+    force: global.config.mysql.forceUpdate,
+    alter: global.config.mysql.update
+});

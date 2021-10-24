@@ -6,6 +6,7 @@ if(isMain) {
     global.config = config;
 }
 
+const fetch = require("node-fetch");
 const sequelize = require("../sequelize");
 const api = require("../api");
 const server = require("../ssps-server");
@@ -70,7 +71,8 @@ sequelize.afterBulkSync(async () => {
                         await Person.create({
                             name: item.Teacher.Name,
                             mail: api.buildTeacherMail(item.Teacher.Name),
-                            flags: 1
+                            flags: 1,
+                            type: "teacher"
                         }).catch(contextErrors(item));
                         const person = await Person.findOne({ where: { mail: api.buildTeacherMail(item.Teacher.Name) } });
                         await Teacher.create({
@@ -108,16 +110,21 @@ sequelize.afterBulkSync(async () => {
             if(!user.email) continue;
             if(!user.email.endsWith("ssps.cz")) continue;
             if(user.email.endsWith("@skola.ssps.cz")) user.email = user.email.replace("@skola.ssps.cz", "@ssps.cz");
+            user.email = user.email.toLowerCase();
             console.log(user.email);
-            var person = await Person.findOne({
+            var [person] = await Person.findOrBuild({
                 where: {
                     [Op.or]: {
                         mail: user.email,
                         name: `${user.firstName} ${user.lastName}`
                     }
+                },
+                defaults: {
+                    mail: user.email,
+                    flags: 1,
+                    type: api.isStudentMail(user.email) ? "student" : api.isTeacherMail(user.email) ? "teacher" : null
                 }
             });
-            if(!person) person = Person.build({ mail: user.email, flags: 1 });
             if(user.about) person.about = user.about;
             if(user.birthday) person.birthday = new Date(user.birthday);
             person.name = `${user.firstName} ${user.lastName}`;
@@ -144,7 +151,31 @@ sequelize.afterBulkSync(async () => {
                     await student.save();
                 }
             } else if(api.isTeacherMail(user.email)) {
-                // synced by timetables
+                const res = await fetch(`https://www.ssps.cz/ucitel/${api.removeCestina(person.name.replace(/ /g, "-").toLowerCase())}`);
+                console.log(`Fetching https://www.ssps.cz/ucitel/${api.removeCestina(person.name.replace(/ /g, "-").toLowerCase())}`);
+                if(res.status !== 200) continue;
+                const text = await res.text();
+                const teacher = await Teacher.findOne({
+                    where: {
+                        personId: person.id
+                    }
+                });
+                if(!teacher) {
+                    console.log("No teacher for", user.email);
+                    continue;
+                }
+                let room = text.match(/kabinetu(?:.|\n)*?"value">((?:.|\n)*?)</)?.[1];
+                let komise = text.match(/Komise(?:.|\n)*?"value">((?:.|\n)*?)</)?.[1];
+                if(!room && !komise) continue;
+                room = room.trim();
+                komise = komise.trim();
+                console.log(room, komise);
+                await Room.create({
+                    id: room
+                }, { ignoreDuplicates: true });
+                teacher.roomId = room;
+                teacher.komise = komise;
+                await teacher.save();
             }
         }
         console.log("Profesni sit synced");

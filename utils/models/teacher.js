@@ -13,6 +13,9 @@ const Teacher = sequelize.define(
         },
         name: {
             type: DataTypes.STRING
+        },
+        komise: {
+            type: DataTypes.STRING
         }
     }, {
         indexes: [{

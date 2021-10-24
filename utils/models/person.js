@@ -27,6 +27,10 @@ const Person = sequelize.define(
         discord: {
             type: DataTypes.BIGINT
         },
+        type: {
+            type: DataTypes.ENUM,
+            values: ["student", "teacher"]
+        },
         flags: {
             type: DataTypes.INTEGER
         }

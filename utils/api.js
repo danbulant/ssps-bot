@@ -156,8 +156,9 @@ class ProfesniSitAPI {
             const res = await request(`https://profesnisit.ssps.cz/user/get-user?id=${id}`);
             id++;
             console.log("Trying", id);
-            if(!res || Object.values(res).every(t => t === null)) {
+            if(!res || Object.values(res).every(t => !t)) {
                 errors++;
+                console.log("Errored", errors, "times");
                 continue;
             }
             errors = 0;
@@ -180,9 +181,6 @@ const letterMap = {
     "ú": "u",
     "ů": "u"
 };
-function removeCestina(str) {
-    return str.split("").map(t => letterMap[t] || t).join("");
-}
 
 class API {
     request = request;
@@ -223,11 +221,16 @@ class API {
     }
 
     buildTeacherMail(name) {
-        return `${removeCestina(name).replace(/ /g, ".")}@ssps.cz`.toLowerCase();
+        if(!Array.isArray(name)) name = name.split(" ");
+        return `${this.removeCestina(name[1] + " " + name[0]).replace(/ /g, ".")}@ssps.cz`.toLowerCase();
     }
     buildStudentMail(name, year) {
         if(!Array.isArray(name)) name = name.split(" ");
-        return `${removeCestina(name[1])}.${removeCestina(name[0]).substr(0,2)}.${year}@ssps.cz`.toLowerCase();
+        return `${this.removeCestina(name[1])}.${this.removeCestina(name[0]).substr(0,2)}.${year}@ssps.cz`.toLowerCase();
+    }
+    
+    removeCestina(str) {
+        return str.split("").map(t => letterMap[t] || t).join("");
     }
 
     groups = [

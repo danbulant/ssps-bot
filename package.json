@@ -6,6 +6,7 @@
 		"js-yaml": "^4.1.0",
 		"luxon": "^2.0.2",
 		"mariadb": "^2.5.5",
+		"minimist": "^1.2.5",
 		"node-fetch": "2",
 		"sequelize": "^6.7.0",
 		"sqlite": "^4.0.23",
