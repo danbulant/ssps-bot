@@ -12,8 +12,8 @@ class Student extends Model {
     /** @type {string} */
     classId;
 
-    async setClassID(classId) {
-        if(this.classId === classId) return;
+    async setClassID(classId, force) {
+        if(this.classId === classId && !force) return;
         this.classId = classId;
         await this.save({ fields: "classId"});
         const [groups, mainGroup] = await Promise.all([
