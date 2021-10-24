@@ -18,6 +18,7 @@ module.exports = class suplovani extends commando.Command {
     async run(msg) {
         let date = DateTime.now();
         if(date.hour > 16) date = date.plus({ days: 1 }); // show tomorrow supplementations after 4PM
+        if(date.weekday > 5) date = date.plus({ days: 8 - weekday});
         const supplementations = await api.getSupplementations(date);
         
         const embed = new MessageEmbed();
