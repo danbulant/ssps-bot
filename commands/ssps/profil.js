@@ -13,6 +13,7 @@ module.exports = class profil extends commando.Command {
         super(client, {
             name: "profil",
             memberName: "profil",
+            aliases: ["profile", "whoami", "whois"],
             group: "ssps",
             description: "Zobrazí profil uživatele",
             args: [{
@@ -61,7 +62,9 @@ module.exports = class profil extends commando.Command {
             const student = await Student.findOne({
                 where: { personId: person.id }
             });
-            embed.addField("Třída", api.demap[student.class]);
+            embed.addField("Třída", api.demap[student.classId], true);
+            const groups = await student.getGroups();
+            embed.addField("Skupiny", groups.filter(t => t.abbrev !== "celá").map(t => t.name).join(", "), true);
         }
 
         return msg.say(embed);
