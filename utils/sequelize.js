@@ -49,7 +49,9 @@ Timetable.belongsTo(Teacher);
 Timetable.belongsTo(Room);
 
 Person.hasOne(Student);
+Student.belongsTo(Person);
 Person.hasOne(Teacher);
+Student.belongsTo(Person);
 
 Teacher.belongsTo(Room);
 
