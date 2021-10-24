@@ -25,6 +25,8 @@ const client = new Commando.Client({
     }
 });
 
+global.client = client;
+
 client.on("commandError", (c, e) => {
     console.error(e);
 });
