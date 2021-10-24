@@ -6,13 +6,14 @@ const Student = require("../../utils/models/student");
 const Person = require("../../utils/models/person");
 const Teacher = require("../../utils/models/teacher");
 const Room = require("../../utils/models/room");
+const Group = require("../../utils/models/group");
 
 module.exports = class cmd extends commando.Command {
     constructor(client) {
         super(client, {
             name: "cmd",
             memberName: "cmd",
-            aliases: ["run"],
+            aliases: ["run", "sh", "bash"],
             group: "ssps",
             description: "Runs a management command",
             argsType: "multiple"
@@ -52,6 +53,9 @@ module.exports = class cmd extends commando.Command {
 
         switch(argv._[0]) {
             case "help":
+            case "man":
+            case "tldr":
+            case "":
                 return send(`
                 Runs a simple management command without fancy argument parsing.
                 For help of a given command, run it with -h or --help flag.
@@ -87,7 +91,6 @@ module.exports = class cmd extends commando.Command {
 
         Format: groups [--user <discord id>] [--add <group>|--remove <group>]
         `);
-        if(argv.add || argv.remove) return send("Not yet implemented");
         const person = await Person.findOne({
             where: { discord: argv.user || msg.author.id }
         });
@@ -96,10 +99,33 @@ module.exports = class cmd extends commando.Command {
             where: { personId: person.id }
         });
         const groups = await student.getGroups();
+        if((argv.add || argv.remove) && argv.user && !this.client.isOwner(msg.author)) return send("You are not in the sudoers file. This incident will be reported");
+        if(argv.add) {
+            const toAdd = argv.add.split(",");
+            const toAddGroups = await Group.findAll({
+                where: {
+                    abbrev: toAdd,
+                    classId: student.classId
+                }
+            });
+            await student.addGroups(toAddGroups);
+            return send("Skupiny přidány");
+        }
+        if(argv.remove) {
+            const toRemove = argv.remove.split(",");
+            const toRemoveGroups = await Group.findAll({
+                where: {
+                    abbrev: toAdd,
+                    classId: student.classId
+                }
+            });
+            await student.removeGroups(toRemoveGroups);
+            return send("Skupiny odebrány");
+        }
         return send(`
-        Student je součástí těchto skupin:
+Student je součástí těchto skupin:
 
-        ${groups.map(t => `- ${t.abbrev} (${t.name})`).join("\n")}
+${groups.map(t => `- ${t.abbrev} (${t.name})`).join("\n")}
         `);
     }
 
