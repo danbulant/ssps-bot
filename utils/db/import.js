@@ -126,14 +126,16 @@ sequelize.afterBulkSync(async () => {
 
             if(api.isStudentMail(user.email)) {
                 if(!user.class) continue;
-                user.class = user.class.replace(/ |\./, "").toUpperCase();
+                user.class = user.class.replace(/ |\./g, "").toUpperCase();
                 var student = await Student.findOne({
                     where: {
                         personId: person.id
                     }
                 });
                 if(!student) {
-                    await Person.create({
+                    await Student.create({
+                        id: user.email.split("@")[0],
+                        classId: api.map[user.class],
                         personId: person.id,
                         name: person.name
                     });
