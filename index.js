@@ -48,7 +48,8 @@ client.on("commandRun", (c, p, msg, args) => {
 client.registry
     .registerGroups([
         ["ssps", "Příkazy pro SSPŠ"],
-        ["nastaveni", "Nastavení bota"]
+        ["nastaveni", "Nastavení bota"],
+        ["nsfw", "Horny bonk"]
     ])
     .registerDefaultTypes()
     .registerCommandsIn(path.join(__dirname, 'commands'));

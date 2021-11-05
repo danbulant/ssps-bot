@@ -1,12 +1,14 @@
 {
 	"dependencies": {
 		"@iceprod/discord.js-commando": "^0.14.4",
+		"cheerio": "^1.0.0-rc.10",
 		"discord.js": "12",
 		"fs-extra": "^10.0.0",
 		"js-yaml": "^4.1.0",
 		"luxon": "^2.0.2",
 		"mariadb": "^2.5.5",
 		"minimist": "^1.2.5",
+		"nekos.life": "^2.0.7",
 		"node-fetch": "2",
 		"sequelize": "^6.7.0",
 		"sqlite": "^4.0.23",
