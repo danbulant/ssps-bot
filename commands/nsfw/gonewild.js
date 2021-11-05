@@ -1,7 +1,7 @@
 const commando = require("@iceprod/discord.js-commando");
 const fetch = require("node-fetch");
 
-module.exports = class Gonewild extends commando.Command {
+/*module.exports =*/ class Gonewild extends commando.Command {
     constructor(client) {
         super(client, {
             name: "gonewild",
