@@ -3,7 +3,7 @@ const Nekos = require("nekos.life");
 const neko = new Nekos().nsfw;
 const commando = require("@iceprod/discord.js-commando");
 
-module.exports = class NekosCommand extends commando.Command {
+/*module.exports =*/ class NekosCommand extends commando.Command {
     constructor(client) {
         super(client, {
             name: "nekos-lewd",
