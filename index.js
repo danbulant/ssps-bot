@@ -45,6 +45,18 @@ client.on("commandRun", (c, p, msg, args) => {
     console.log(`[RUN]: ${msg.author.tag}@${msg.guild?.name || "DM"}#${msg.channel?.name || "default"}/${c.groupID}/${c.name}?${serializeArgs(args)} | ${msg.content}`);
 });
 
+client.on("message", (msg) => {
+    if(msg.guild && msg.guild.id === "854063584007028737") {
+        if(Math.random() * 100 < 3) {
+            if(Math.random() * 2 < 1) {
+                msg.channel.send("Sám si " + msg.content);
+            } else {
+                msg.channel.send("Tvoje máma " + msg.content);
+            }
+        }
+    }
+});
+
 client.registry
     .registerGroups([
         ["ssps", "Příkazy pro SSPŠ"],
