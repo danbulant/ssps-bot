@@ -47,6 +47,7 @@ module.exports = class rozvrh extends commando.Command {
         if(date.weekday === 0 || date.weekday === 7) {
             date = date.plus({ days: date.weekday === 0 ? 2 : 1 });
         }
+        if(date.weekday > 5) date = date.plus({ days: 8 - date.weekday});
         const schedule = await Timetable.findAll({
             where: {
                 day: date.weekday - 1,
