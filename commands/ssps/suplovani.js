@@ -34,6 +34,7 @@ module.exports = class suplovani extends commando.Command {
                 if(!changes.has(t.Hour)) changes.set(t.Hour, []);
                 changes.set(t.Hour, [...changes.get(t.Hour), `(\`${t.Subject}\`) **${t.ChgType1}** ${t.Group ? "(sk. " + t.Group + ")" : ""} ${t.Room ? "v `" + api.formatRoom(t.Room) + "`" : ""}`]);
             }
+            if(!change.Class.Abbrev) continue;
             embed.addField(change.Class.Abbrev,
                 [...changes.entries()].map(t => `**${t[0]}**. h.: ${t[1].map(t => t.trim()).join("; ")}`) || "Žádná změna",
                 true

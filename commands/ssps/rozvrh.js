@@ -73,7 +73,7 @@ module.exports = class rozvrh extends commando.Command {
             for(const scell of cells) {
                 embed.addField(scell.subject.abbrev, `\`${api.formatRoom(scell.roomId) || "?"}\` - ${scell.teacher.name} - **${scell.group.name}**`, cells.length > 1);
             }
-            if(cells.length > 1 && schedule[cellI + 1].length > 1) embed.addField("\u200B", "\u200B", true);
+            if(cells.length > 1 && schedule[cellI + 1]?.length > 1) embed.addField("\u200B", "\u200B", true);
         }
 
         return msg.say(embed);
