@@ -42,6 +42,10 @@ module.exports = class suplovani extends commando.Command {
             );
         }
 
+        if(!embed.fields.length) {
+            embed.setDescription("Není hlášeno žádné suplování.");
+        }
+
         return msg.say(embed);
     }
 };
